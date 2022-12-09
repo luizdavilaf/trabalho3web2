@@ -14,6 +14,10 @@ router.post('/', CategoryController.create);
 router.get('/list', CategoryController.listAll);
 
 
+router.post('/link-user', CategoryController.linkCategoryToUser);
+
+
+
 
 
 

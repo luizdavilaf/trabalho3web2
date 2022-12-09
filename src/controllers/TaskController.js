@@ -23,7 +23,7 @@ const create = async (req, res) => {
         taskObj.title = req.body.title
         if (req.body.description != undefined) {
             taskObj.description = req.body.description
-            if (req.body.category != undefined) {
+            if (req.body.categoryId != undefined) {
                 taskObj.categoryId = req.body.categoryId
             }
             if(req.body.deadline!=undefined){

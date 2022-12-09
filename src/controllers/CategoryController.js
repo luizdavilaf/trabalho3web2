@@ -44,14 +44,14 @@ const create = async (req, res) => {
             } else {
                 err.mensagem = err.message
             }
-            res.status(400).send({ msg: "Ocorreu um erro na criação do usuário", err: err.mensagem })
+            res.status(400).send({ msg: "Ocorreu um erro na criação da categoria", err: err.mensagem })
 
         })
 }
 
 const listAll = async (req, res) => {
     await Category.findAll({
-        include: User
+        include: [User, Task]
     }).then((Category) => {
         //res.render('users-list', { users: users })
        
@@ -66,12 +66,30 @@ const listAll = async (req, res) => {
         })
 }
 
+const linkCategoryToUser = async (req, res) => {
+    const categoryId = req.body.categoryId
+    const userId = req.body.userId
+    await Category.findByPk(categoryId)
+    .then(async(category)=>{
+        await User.findByPk(userId)
+        .then((user)=>{
+            category.addUser(user)
+            res.status(200).send(`A categoria "${category.title}" foi vinculada ao usuário "${user.name}"`);
+        })
+    }).catch((err)=>{
+        res.status(500).send({
+            msg: "Ocorreu um erro ao buscar usuários... Tente novamente!",
+            err: "" + err
+        });        
+    })
+}
+
 
 
 
 
 module.exports = {
-
+    linkCategoryToUser,
     create,
     listAll,
 };
