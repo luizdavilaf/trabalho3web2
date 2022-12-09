@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/main.css">
+   
+    <title>Inserir Imagem</title>
+
+</head>
+<body>
+    <div class="box">
+        <%- include('./includes/header') %>
+        <div class="container">
+        <%- include('./includes/navbar2', { user: user || undefined}) %>
+            <main>
+                <div class="mainContainer">
+                    <h1>Inserir imagem no post</h1>
+                    <div class="form">            
+                            <form action="/posts/image/<%=postid%>" method="post">
+                                <label for="img1">Imagem 1:</label>
+                                <input type="text" name="images[0]">
+                                <br>    
+                                <label for="img2">Imagem 2:</label>
+                                <input type="text" name="images[1]">
+                                <br>                
+                                <label for="img3">Imagem 3:</label>
+                                <input type="text" name="images[2]">
+                                <br>                
+                                <label for="img4">Imagem 4:</label>
+                                <input type="text" name="images[3]">
+                                <br>                
+                                <label for="img5">Imagem 5:</label>
+                                <input type="text" name="images[4]">
+                                <input type="hidden" name="post" value="<%=post%>">
+                                <br>  
+                                <br>  
+                                <button type="submit" class="btn btn-common">Cadastra</button>
+                            </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+  </div>  
+</body>
+</html>
