@@ -72,6 +72,23 @@ const listAll = async (req, res) => {
         })
 }
 
+const listAllTasksByUser = async (req, res) => {
+    await User.findAll({
+        attributes: {
+            exclude: ['password', 'created_at']
+        }
+    }).then((users) => {
+        //res.render('users-list', { users: users })
+        res.status(200).send({ users: users });
+    })
+        .catch((err) => {
+            res.status(500).send({
+                msg: "Ocorreu um erro ao buscar usuários... Tente novamente!",
+                err: "" + err
+            });
+        })
+}
+
 
 
 
