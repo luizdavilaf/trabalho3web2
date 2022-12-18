@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        let texto="";
+      async function buscaTarefas(form) {  
+            
+        var categoryId = form.categoryId.value    
+        console.log(categoryId)       
+            
+        texto+="<h2>Tarefas:</h2>";
+        texto+= "<table class='table table-striped table-secondary'>";
+        texto+= "<tr>";
+        texto+= "<th>Código</th>";
+        texto+= "<th>Nome</th>";
+        texto+= "<th>Prazo</th>";
+        texto+= "<th>Concluída</th>";
+        texto+= "</tr>";        
+        const url = "/tasks/list-by-category/"+categoryId;        
+        let resposta = await fetch(url);
+        let tarefas = await resposta.json();            
+        tarefas.tasks.forEach (montaLinha); 
+        texto+= "</table>";
+        const painel = document.querySelector('#tarefas');
+        painel.innerHTML = texto;         
+        texto=""
+        
+      }
+
+      function montaLinha (tarefa){
+        id=tarefa.id;
+        title=tarefa.title;
+        deadline=tarefa.deadline;
+        if(tarefa.done==true){
+            done = "Sim"
+        }else{
+            done= "Não"
+        }
+                                        
+        texto+= "<tr>";
+        texto+= "<td>"+id+"</td>";
+        texto+= "<td>"+title+"</td>";
+        texto+= "<td>"+deadline+"</td>";
+        texto+= "<td>"+done+"</td>";
+        texto+="<td><a href='./editar.php?cod=$codigo' class='btn btn-success'>Concluir</a></td>";
+        texto+="<td><a href='./editar.php?cod=$codigo' class='btn btn-warning'>Atribuir</a></td>";
+        texto+="<td><a href='./excluir.php?cod=$codigo' class='btn btn-danger'>Excluir</a></td>";        
+        texto+= "</tr>";                    
+    }
+    </script>
+
+    <title>Categorias</title>
+  </head>
+  <body>
+    <div class="box">
+        <header class="jumbotron"></header>
+      <div class="container">
+        <main>
+          <div class="mainContainer">
+            <div class="form">
+              <form name="formTasks" method="dialog" onsubmit="return buscaTarefas(this)" >
+                <select name="categoryId" >
+                  <option value="">Selecione a categoria</option>
+                  <% if(categories.length){ for(let i = 0; i <categories.length; i++) { %>
+                  <option value='<%=categories[i].id%>'> <%=categories[i].title%> </option>  
+                  <option value='noCategory'> Sem Categoria </option>                
+                  <% } } %>
+                </select>  
+                <input type="checkbox" id="pending" name="pending">
+                <label for="pending">Pendentes</label>
+                <input type="checkbox" id="outdated" name="outdated">
+                <label for="outdated">Atrasadas</label>
+                <input class="button" id="submit" type="submit" />          
+              </form>
+              <div id="tarefas"></div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

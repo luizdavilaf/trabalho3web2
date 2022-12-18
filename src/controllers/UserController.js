@@ -1,6 +1,8 @@
 const db = require('../database/dbconnection');
 const { User } = require('../models/User');
 const sequelize = require("../database/sequelize-connection");
+const { Task } = require('../models/Tasks');
+const { Category } = require('../models/Categories');
 
 const { Sequelize } = require("sequelize");
 
@@ -42,7 +44,7 @@ const create = async (req, res) => {
     }
     await User.create(userObj)
         .then((user) => {
-            res.status(200).send({msg: "usuario criado"});
+            res.status(200).send({ msg: "usuario criado" });
         })
         .catch((err) => {
             if (err.errors[0].message.includes("must be unique")) {
@@ -50,17 +52,60 @@ const create = async (req, res) => {
             } else {
                 err.mensagem = err.message
             }
-            res.status(400).send({ msg: "Ocorreu um erro na criação do usuário" , err: err.mensagem})
+            res.status(400).send({ msg: "Ocorreu um erro na criação do usuário", err: err.mensagem })
 
         })
 }
 
 const listAll = async (req, res) => {
+    var categoryId = undefined
+    if(req.params.categoryId!=undefined){
+        categoryId = req.params.categoryId
+    }
     await User.findAll({
         attributes: {
             exclude: ['password', 'created_at']
         }
     }).then((users) => {
+        res.render('show-users', { users: users, categoryId: categoryId })
+        //res.status(200).send({ users: users });
+    })
+        .catch((err) => {
+            res.status(500).send({
+                msg: "Ocorreu um erro ao buscar usuários... Tente novamente!",
+                err: "" + err
+            });
+        })
+}
+
+const listAllTasksByUser = async (req, res) => {
+    const userId = req.params.userId
+    const currentDate = new Date(Date.now())
+    var query = {
+        attributes: {
+            exclude: ['password', 'created_at']
+        },
+        include: [{
+            model: Task,
+            raw: true,
+            required: false,
+            include: [{
+                model: Category,
+                raw: true,
+                required: false,
+            }]
+        }]
+    }
+    if (req.query.outdated != undefined && req.query.outdated=="true"){
+        query.include[0].where = { deadline: { [Sequelize.Op.lte]: currentDate }, done: false }        
+    }
+    
+    if (req.query.pending != undefined && req.query.pending=="true") {        
+        query.include[0].where = { done: false }        
+    }
+   
+    await User.findByPk(userId, query
+    ).then((users) => {
         //res.render('users-list', { users: users })
         res.status(200).send({ users: users });
     })
@@ -72,14 +117,39 @@ const listAll = async (req, res) => {
         })
 }
 
-const listAllTasksByUser = async (req, res) => {
-    await User.findAll({
-        attributes: {
-            exclude: ['password', 'created_at']
-        }
-    }).then((users) => {
+const listAllCategoriesByUser = async (req, res) => {
+    const userId = req.session.user.id 
+    await Category.findAll({        
+        include: [{
+            model: User,
+            where: { id: userId }
+        }],
+        raw: true
+    }).then((Categories) => {
         //res.render('users-list', { users: users })
-        res.status(200).send({ users: users });
+        //console.log(Categories)
+        res.render('show-categories2', { categories: Categories });
+    })
+        .catch((err) => {
+            res.status(500).send({
+                msg: "Ocorreu um erro ao buscar usuários... Tente novamente!",
+                err: "" + err
+            });
+        })
+}
+
+const listAllCategoriesByUserToLink = async (req, res) => {
+    const userId = req.session.user.id
+    await Category.findAll({
+        include: [{
+            model: User,
+            where: { id: userId }
+        }],
+        raw: true
+    }).then((Categories) => {
+        //res.render('users-list', { users: users })
+        //console.log(Categories)
+        res.render('show-categories-to-link', { categories: Categories });
     })
         .catch((err) => {
             res.status(500).send({
@@ -94,7 +164,9 @@ const listAllTasksByUser = async (req, res) => {
 
 
 module.exports = {
-        
+    listAllCategoriesByUserToLink,
+    listAllCategoriesByUser,
+    listAllTasksByUser,
     create,
-    listAll,    
+    listAll,
 };

@@ -29,11 +29,14 @@ const login = async (req, res) => {
                 return res.status(400).send({ msg: "Senha Invalida!" });
 
             } else {
-                req.session.user = { id: user1.dataValues.id, name: user1.dataValues.name, email: user1.dataValues.email }
                 const token = jwt.sign({ user: user1.id }, SECRET, { expiresIn: 3600 })
-                return res.status(200).send({ msg: "logado...", token });
-                //res.send('<script>alert("Logado..."); window.location.href = "/"; </script>')
-                res.redirect('/')
+                req.session.user = { id: user1.dataValues.id, name: user1.dataValues.name, email: user1.dataValues.email, token: token }
+
+                
+
+                /* return res.status(200).send({ msg: "logado...", token }); */
+                res.send('<script>alert("Logado..."); window.location.href = "/users/categories";</script>')
+                //res.redirect('/users/categories')
             }
 
         })
@@ -55,9 +58,9 @@ const logout = (req, res) => {
 }
 
 const verifyJWT = (req, res, next) => {
-    const token = req.headers['x-access-token']
-    jwt.verify(token, SECRET, (err,decoded)=>{
-        if(err) return res.status(401).send("erro de verificação do token")
+    const token = req.session.user.token    
+    jwt.verify(token, SECRET, (err, decoded) => {
+        if (err) return res.status(401).send("erro de verificação do token")
         req.userId = decoded.userId
         next()
     })

@@ -30,13 +30,12 @@ const create = async (req, res) => {
     } else {
         throw new Error("O titulo da categoria não pode ser vazio!");
     }
-    await Category.create(category_obj)
+    await Category.create(category_obj)//cria categoria
         .then((Category) => {
-            User.findByPk(req.body.userId).then((user) => {
+            User.findByPk(req.body.userId).then((user) => {//associa usuario a categoria
                 Category.addUser(user)
-                res.status(200).send({ Category: Category, user:user });
+                res.status(200).send({ Category: Category, user: user });
             })
-           
         })
         .catch((err) => {
             if (err.errors[0].message.includes("must be unique")) {
@@ -54,9 +53,9 @@ const listAll = async (req, res) => {
         include: [User, Task]
     }).then((Category) => {
         //res.render('users-list', { users: users })
-       
-            res.status(200).send({ Category: Category });
-        
+
+        res.status(200).send({ Category: Category });
+
     })
         .catch((err) => {
             res.status(500).send({
@@ -66,22 +65,39 @@ const listAll = async (req, res) => {
         })
 }
 
+
+
 const linkCategoryToUser = async (req, res) => {
     const categoryId = req.body.categoryId
     const userId = req.body.userId
-    await Category.findByPk(categoryId)
-    .then(async(category)=>{
-        await User.findByPk(userId)
-        .then((user)=>{
-            category.addUser(user)
-            res.status(200).send(`A categoria "${category.title}" foi vinculada ao usuário "${user.name}"`);
-        })
-    }).catch((err)=>{
-        res.status(500).send({
-            msg: "Ocorreu um erro ao buscar usuários... Tente novamente!",
-            err: "" + err
-        });        
+    await Category.findByPk(categoryId, {
+        attributes: {
+            exclude: ['password', 'created_at']
+        }
+        ,
+        include: [{
+            model: Task,
+            raw: true,
+            required: false,
+        }]
     })
+        .then(async (category) => {
+            await User.findByPk(userId)
+                .then((user) => {
+                    if(category.tasks){
+                        category.tasks.forEach((task)=>{
+                            task.addUser(user)
+                        })                    
+                    }
+                    category.addUser(user)
+                    res.status(200).send({ msg: `A categoria "${category.title}" e suas tarefas foram vinculadas ao usuário "${user.name}"`, category });
+                })
+        }).catch((err) => {
+            res.status(500).send({
+                msg: "Ocorreu um erro ao buscar usuários... Tente novamente!",
+                err: "" + err
+            });
+        })
 }
 
 
@@ -89,6 +105,7 @@ const linkCategoryToUser = async (req, res) => {
 
 
 module.exports = {
+    
     linkCategoryToUser,
     create,
     listAll,

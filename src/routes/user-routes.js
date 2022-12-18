@@ -10,19 +10,23 @@ router.post('/login', AuthController.login);
 
 router.get('/logout', AuthController.logout);
 
-/* router.get('/login', AuthController.renderLogin); */
+router.get('/login', AuthController.renderLogin);
 
 router.post('/', UserController.create);
 
 /* router.get('/', UserController.renderAdd); */
 
-router.get('/list', UserController.listAll);
+router.get('/list/:categoryId', UserController.listAll);
 /* 
 router.get('/:username', UserController.detailByUsername);
 
 router.delete('/:cpf', UserController.deleteByCpf); */
 
+router.get('/list/tasks/:userId', UserController.listAllTasksByUser);
 
+router.get('/categories', isAuth, AuthController.verifyJWT, UserController.listAllCategoriesByUser); 
+
+router.get('/categories-to-link', isAuth, UserController.listAllCategoriesByUserToLink);
 
 
 

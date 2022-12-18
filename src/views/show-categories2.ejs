@@ -19,20 +19,21 @@
         <%- include('./includes/navbar'/* , { user: user || undefined} */) %>
         <main>
           <div class="mainContainer">
-            <h2>Usuários:</h2>
-             <div class="form">
-              <form action="/users/login/" method="post" >
-                <label for="email">Email:</label>
-                <input type="email" name="email" required>
-                <br>                
-                <br>
-                <label for="password">Senha:</label>
-                <input type="password" name="password" required>
-                <br>  
-                <br>                  
-                <input class="button" id="submit" type="submit" />          
-              </form>    
-             
+            <div class="form">
+              <form action="/tasks/list-by-category/" method="get" >
+                <select id="categoryId" name="categoryId">
+                  <option value="" selected>Selecione a categoria</option>
+                  <% if(categories.length){ for(let i = 0; i <categories.length; i++) { %>
+                  <option value='<%=categories[i].id%>'> <%=categories[i].title%> </option>  
+                  <option value='noCategory'> Sem Categoria </option>                
+                  <% } } %>
+                </select>  
+                <input type="checkbox" id="pending" name="pending">
+                <label for="pending">Pendentes</label>
+                <input type="checkbox" id="outdated" name="outdated">
+                <label for="outdated">Atrasadas</label>
+                <input class="button" id="submit" type="submit">          
+              </form>              
             </div>
           </div>
         </main>

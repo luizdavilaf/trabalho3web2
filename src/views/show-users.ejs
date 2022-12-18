@@ -21,16 +21,16 @@
           <div class="mainContainer">
             <h2>Usuários:</h2>
              <div class="form">
-              <form action="/users/login/" method="post" >
-                <label for="email">Email:</label>
-                <input type="email" name="email" required>
-                <br>                
-                <br>
-                <label for="password">Senha:</label>
-                <input type="password" name="password" required>
-                <br>  
-                <br>                  
-                <input class="button" id="submit" type="submit" />          
+              <form action="/categories/link-user" method="post" >
+                <select id="userId" name="userId">
+                  <option value="">Selecione o usuário</option>
+                  <% if(users.length){ for(let i = 0; i <users.length; i++) { %>
+                  <option value='<%=users[i].id%>'> <%=users[i].name%> </option>  
+                                 
+                  <% } } %>
+                </select>  
+                <input type="hidden" name="categoryId" value="<%=categoryId%>">                
+                <input class="button" id="submit" type="submit" value="Atribuir" />          
               </form>    
              
             </div>

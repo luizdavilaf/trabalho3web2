@@ -13,6 +13,12 @@ router.post('/', TaskController.create);
 
 router.get('/list', TaskController.listAll);
 
+router.put('/set-done/:taskId', TaskController.setTaskDone);
+
+router.get('/list-by-category/', TaskController.listbyCategory);
+
+
+
 
 
 

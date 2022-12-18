@@ -4,18 +4,18 @@ const { User } = require('./User');
 const { Category } = require('./Categories');
 const { Task } = require('./Tasks');
 
-Task.belongsTo(Category)
-Category.hasMany(Task)
+
 
 User.belongsToMany(Category, { through: 'User_Categories' });
 Category.belongsToMany(User, { through: 'User_Categories' });
 
 
-Task.belongsTo(User)
-User.hasMany(Task)
+Task.belongsToMany(User, { through: 'User_Tasks' })
+User.belongsToMany(Task, { through: 'User_Tasks' })
 
 
-
+Task.belongsTo(Category)
+Category.hasMany(Task)
 
 
 
