@@ -3,12 +3,21 @@ const { User } = require('../models/User');
 const jwt = require('jsonwebtoken');
 const SECRET = 'luizdavilaf'
 
-
+/**
+ * renderiza para logar
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
 const renderLogin = (req, res) => {
     var user = undefined
     return res.render("login", { user });
 }
-
+/**
+ * login
+ * @param {*} req 
+ * @param {*} res 
+ */
 const login = async (req, res) => {
 
     const email = req.body.email;

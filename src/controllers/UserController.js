@@ -7,7 +7,12 @@ const { Category } = require('../models/Categories');
 const { Sequelize } = require("sequelize");
 
 
-
+/**
+ * renderiza para criar usuario
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
 const renderAdd = (req, res) => {
     let user = undefined
     if (req.session.user) {
@@ -16,7 +21,11 @@ const renderAdd = (req, res) => {
     return res.render("user-sign", { user });
 }
 
-
+/**
+ * cria usuario
+ * @param {*} req 
+ * @param {*} res 
+ */
 const create = async (req, res) => {
     let user = undefined
     if (req.session.user) {
@@ -61,7 +70,11 @@ const create = async (req, res) => {
 
         })
 }
-
+/**
+ * lista todos os outros usuarios disponiveis para vincular categoria
+ * @param {*} req 
+ * @param {*} res 
+ */
 const listAll = async (req, res) => {
     let user = undefined
     if (req.session.user) {
@@ -88,7 +101,11 @@ const listAll = async (req, res) => {
             });
         })
 }
-
+/**
+ * lista categorias do usuario para depois buscar as tarefas
+ * @param {*} req 
+ * @param {*} res 
+ */
 const listAllCategoriesByUser = async (req, res) => {
     var message = req.session.flash.message
     delete req.session.flash.message
@@ -114,7 +131,11 @@ const listAllCategoriesByUser = async (req, res) => {
             });
         })
 }
-
+/**
+ * lista todas categorias para vincular a outro usuario
+ * @param {*} req 
+ * @param {*} res 
+ */
 const listAllCategoriesByUserToLink = async (req, res) => {
     let user = undefined
     if (req.session.user) {

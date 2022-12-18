@@ -15,6 +15,7 @@ router.get('/set-done/:taskId', isAuth, AuthController.verifyJWT, TaskController
 
 router.get('/list-by-category/', isAuth, AuthController.verifyJWT, TaskController.listbyCategory);
 
+router.get('/delete/:taskId', isAuth, AuthController.verifyJWT, TaskController.hardDelete);
 
 
 

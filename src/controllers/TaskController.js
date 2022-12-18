@@ -7,7 +7,11 @@ const { date } = require('joi');
 const { Category } = require('../models/Categories');
 
 
-
+/**
+ * renderiza para adicionar tarefa
+ * @param {*} req 
+ * @param {*} res 
+ */
 const renderAdd = (req, res) => {
     let user = undefined
     if (req.session.user) {
@@ -29,7 +33,11 @@ const renderAdd = (req, res) => {
     
 }
 
-
+/**
+ * criação de tarefa
+ * @param {*} req 
+ * @param {*} res 
+ */
 const create = async (req, res) => {
     var taskObj = {}
     let user = undefined
@@ -79,7 +87,11 @@ const create = async (req, res) => {
 }
 
 
-
+/**
+ * definir tarefa como concluida
+ * @param {*} req 
+ * @param {*} res 
+ */
 const setTaskDone = async (req, res) => {
     const taskId = req.params.taskId    
     let user = undefined
@@ -115,7 +127,11 @@ const setTaskDone = async (req, res) => {
             });
         })
 }
-
+/**
+ * listar tarefas de uma categoria especifica ou sem categoria
+ * @param {*} req 
+ * @param {*} res 
+ */
 const listbyCategory = async (req, res) => {
     let user = undefined
     if (req.session.user) {
@@ -184,10 +200,32 @@ const listbyCategory = async (req, res) => {
         })
 }
 
+/**
+ * deletar tarefa
+ * @param {*} req 
+ * @param {*} res 
+ */
+const hardDelete = async (req, res) => {
+    const taskId = req.query.taskId  
+    
+    await Task.destroy({ where: { id: taskId }}).then((result) => {
+        req.flash('message', "tarefa excluída")
+        return res.redirect("/users/categories");       
+       
+    })
+        .catch((err) => {
+            res.status(500).send({
+                msg: "Ocorreu um erro ao buscar usuários... Tente novamente!",
+                err: "" + err
+            });
+        })
+}
+
 
 
 
 module.exports = {
+    hardDelete,
     renderAdd,
     listbyCategory,
     setTaskDone,
