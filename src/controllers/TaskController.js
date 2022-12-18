@@ -121,6 +121,7 @@ const listbyCategory = async (req, res) => {
     if (req.session.user) {
         user = req.session.user
     }
+    const userId = user.id
     const categoryId = req.query.categoryId    
     const currentDate = new Date(Date.now())
     var page =1
@@ -150,7 +151,11 @@ const listbyCategory = async (req, res) => {
    
     
     if (categoryId == "noCategory") {
-        query['where'] = { categoryId: null }          
+        query['where'] = { categoryId: null }   
+        query.include = [{
+            model: User,
+            where: { id: userId }
+        }]       
     } else {
         query.include = [{
                 model: Category,
