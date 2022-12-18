@@ -7,23 +7,36 @@ const { Sequelize } = require("sequelize");
 const { date } = require('joi');
 
 
-
-/* const renderAdd = (req, res) => {
+/**
+ * renderiza para a criação de categoria
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
+const renderAdd = (req, res) => {
     let user = undefined
     if (req.session.user) {
-        user = req.session.user.id
+        user = req.session.user
     }
-    return res.render("user-sign", { user });
-} */
+    return res.render("create-category", { user });
+}
 
-
+/**
+ * criação de categoria
+ * @param {*} req 
+ * @param {*} res 
+ */
 const create = async (req, res) => {
     var category_obj = {}
-
+    let user = undefined
+    if (req.session.user) {
+        user = req.session.user
+    }
+    let userId = user.id
     if (req.body.title != undefined) {
         category_obj.title = req.body.title
-        if (req.body.userId != undefined) {
-            category_obj.userId = req.body.userId
+        if (userId != undefined) {
+            category_obj.userId = userId
         } else {
             throw new Error("A categoria deve ter um usuário responsável não pode ser vazio!");
         }
@@ -32,9 +45,11 @@ const create = async (req, res) => {
     }
     await Category.create(category_obj)//cria categoria
         .then((Category) => {
-            User.findByPk(req.body.userId).then((user) => {//associa usuario a categoria
+            User.findByPk(userId).then((user) => {//associa usuario a categoria
                 Category.addUser(user)
-                res.status(200).send({ Category: Category, user: user });
+                //res.status(200).send({ Category: Category, user: user });
+                req.flash('message', "Categoria criada...")
+                return res.redirect("/users/categories/");
             })
         })
         .catch((err) => {
@@ -48,28 +63,19 @@ const create = async (req, res) => {
         })
 }
 
-const listAll = async (req, res) => {
-    await Category.findAll({
-        include: [User, Task]
-    }).then((Category) => {
-        //res.render('users-list', { users: users })
 
-        res.status(200).send({ Category: Category });
-
-    })
-        .catch((err) => {
-            res.status(500).send({
-                msg: "Ocorreu um erro ao buscar usuários... Tente novamente!",
-                err: "" + err
-            });
-        })
-}
-
-
-
+/**
+ * vincula uma categoria a outro usuario
+ * @param {*} req 
+ * @param {*} res 
+ */
 const linkCategoryToUser = async (req, res) => {
     const categoryId = req.body.categoryId
-    const userId = req.body.userId
+    let user = undefined
+    if (req.session.user) {
+        user = req.session.user
+    }
+    let userId = user.id
     await Category.findByPk(categoryId, {
         attributes: {
             exclude: ['password', 'created_at']
@@ -90,7 +96,9 @@ const linkCategoryToUser = async (req, res) => {
                         })                    
                     }
                     category.addUser(user)
-                    res.status(200).send({ msg: `A categoria "${category.title}" e suas tarefas foram vinculadas ao usuário "${user.name}"`, category });
+                    //res.status(200).send({ msg: `A categoria "${category.title}" e suas tarefas foram vinculadas ao usuário "${user.name}"`, category });
+                    req.flash('message', "Categoria vinculada...")
+                    return res.redirect("/users/categories/");
                 })
         }).catch((err) => {
             res.status(500).send({
@@ -105,8 +113,7 @@ const linkCategoryToUser = async (req, res) => {
 
 
 module.exports = {
-    
+    renderAdd,
     linkCategoryToUser,
-    create,
-    listAll,
+    create, 
 };

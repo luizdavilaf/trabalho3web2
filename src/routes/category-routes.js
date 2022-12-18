@@ -7,14 +7,11 @@ const isAuth = require('../middlewares/isAuth');
 const isAdmin = require('../middlewares/isAdmin');
 
 
+router.get('/', isAuth, AuthController.verifyJWT, CategoryController.renderAdd);
 
+router.post('/', isAuth, AuthController.verifyJWT, CategoryController.create);
 
-router.post('/', CategoryController.create);
-
-router.get('/list', CategoryController.listAll);
-
-
-router.post('/link-user', CategoryController.linkCategoryToUser);
+router.post('/link-user', isAuth, AuthController.verifyJWT, CategoryController.linkCategoryToUser);
 
 
 

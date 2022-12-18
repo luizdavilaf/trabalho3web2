@@ -1,12 +1,25 @@
 <ul class="nav">
-  <li class="nav-item">
+  <!-- <li class="nav-item">
     <a class="nav-link active" href="/users/login">login</a>
+  </li> -->
+  <%if(locals.user){%>
+    <li class="nav-item"><a class="nav-link" href="#" disabled>Olá ,<%- user.name %></a></li> 
+    <li class="nav-item"><a class="nav-link" href="/users/logout/">Logout</a></li> 
+    <% } else { %>
+    <li class="nav-item"><a class="nav-link" href="/users/login">Login</a></li>
+    <li class="nav-item"><a class="nav-link" href="/users/">Cadastre-se</a></li>
+    <% } %>
+  <li class="nav-item">
+    <a class="nav-link" href="/users/categories">Tarefas</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="/users/categories">tarefas</a>
+    <a class="nav-link" href="/users/categories-to-link">Atribuir categorias</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="/users/categories-to-link">atribuir categorias</a>
+    <a class="nav-link" href="/categories/">Criar categorias</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="/tasks/">Criar tarefas</a>
   </li>
   
 </ul>

@@ -10,7 +10,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
    
 
-    <title>Categorias</title>
+    <title>Criar Categorias</title>
   </head>
   <body>
     <div class="box">
@@ -19,18 +19,14 @@
         <%- include('./includes/navbar', { user: user || undefined}) %>
         <main>
           <div class="mainContainer">
-            <h2>Usuários:</h2>
+            <h2>Criar Categoria:</h2>
              <div class="form">
-              <form action="/categories/link-user" method="post" >
-                <select id="userId" name="userId">
-                  <option value="">Selecione o usuário</option>
-                  <% if(users.length){ for(let i = 0; i <users.length; i++) { %>
-                  <option value='<%=users[i].id%>'> <%=users[i].name%> </option>  
-                                 
-                  <% } } %>
-                </select>  
-                <input type="hidden" name="categoryId" value="<%=categoryId%>">                
-                <input class="button" id="submit" type="submit" value="Atribuir" />          
+              <form action="/categories/" method="post" >
+                <label for="title">Titulo:</label>
+                <input type="text" name="title" required>
+                <br>                
+                <br>                                 
+                <input class="button" id="submit" type="submit" />          
               </form>    
              
             </div>

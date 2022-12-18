@@ -16,7 +16,7 @@
     <div class="box">
         <header class="jumbotron"></header>
       <div class="container">
-        <%- include('./includes/navbar'/* , { user: user || undefined} */) %>
+        <%- include('./includes/navbar', { user: user || undefined}) %>
         <main>
           <div class="mainContainer">
             <h2>Tarefas:</h2>
@@ -34,7 +34,7 @@
                   <td><%=tasks[i].deadline%></td>
                   <td><% if(tasks[i].done==true){tasks[i].done="Sim"}else{tasks[i].done="Não"} %>
                   <%=tasks[i].done%></td>
-                  <td><a href='./tasks/set-done/<%=tasks[i].id%>' class='btn btn-success'>Concluir</a></td>                  
+                  <td><a href='/tasks/set-done/<%=tasks[i].id%>' class='btn btn-success'>Concluir</a></td>                  
                   <td><a href='./excluir.php?cod=$codigo' class='btn btn-danger'>Excluir</a></td>
                 </tr>
                     

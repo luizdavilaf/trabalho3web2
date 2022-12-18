@@ -14,19 +14,15 @@ router.get('/login', AuthController.renderLogin);
 
 router.post('/', UserController.create);
 
-/* router.get('/', UserController.renderAdd); */
+router.get('/', UserController.renderAdd);
 
-router.get('/list/:categoryId', UserController.listAll);
-/* 
-router.get('/:username', UserController.detailByUsername);
+router.get('/list/:categoryId', isAuth, AuthController.verifyJWT, UserController.listAll);
 
-router.delete('/:cpf', UserController.deleteByCpf); */
-
-router.get('/list/tasks/:userId', UserController.listAllTasksByUser);
+/* router.get('/list/tasks/:userId', UserController.listAllTasksByUser); */
 
 router.get('/categories', isAuth, AuthController.verifyJWT, UserController.listAllCategoriesByUser); 
 
-router.get('/categories-to-link', isAuth, UserController.listAllCategoriesByUserToLink);
+router.get('/categories-to-link', isAuth, AuthController.verifyJWT, UserController.listAllCategoriesByUserToLink);
 
 
 

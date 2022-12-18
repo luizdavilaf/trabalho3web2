@@ -10,7 +10,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
    
 
-    <title>Categorias</title>
+    <title>Criar Tarefa</title>
   </head>
   <body>
     <div class="box">
@@ -19,33 +19,37 @@
         <%- include('./includes/navbar', { user: user || undefined}) %>
         <main>
           <div class="mainContainer">
-            <div class="form">
-              <form action="/tasks/list-by-category/" method="get" >
+            <h2>Criar Tarefa:</h2>
+             <div class="form">
+              <form action="/tasks/" method="post" >
+                <label for="title">Titulo:</label>
+                <input type="text" name="title" required>
+                <br>                
+                <br>          
+                <label for="description">Descrição:</label>
+                <input type="text" name="description" required>
+                <br>                
+                <br>          
                 <select id="categoryId" name="categoryId">
                   <option value="#" selected>Selecione a categoria</option>
                   <% if(categories.length){ for(let i = 0; i <categories.length; i++) { %>
                   <option value='<%=categories[i].id%>'> <%=categories[i].title%> </option>                                  
                   <% } } %>
                   <option value='noCategory'> Sem Categoria </option>  
-                </select>  
-                <input type="checkbox" id="pending" name="pending">
-                <label for="pending">Pendentes</label>
-                <input type="checkbox" id="outdated" name="outdated">
-                <label for="outdated">Atrasadas</label>
-                <input class="button" id="submit" type="submit">          
-              </form>              
+                </select>    
+                 <br>                
+                <br>          
+                <label for="deadline">Prazo Final:</label>
+                <input type="date" name="deadline" required>   
+                <br>                
+                <br>                                         
+                <input class="button" id="submit" type="submit" value="criar">          
+              </form>    
+             
             </div>
-            
           </div>
         </main>
       </div>
-      
-          <% if(message) if(message.length>0) { %>
-              
-              <script>alert("<%= message %> ")</script>  
-              
-              <%} %>
-          
     </div>
   </body>
 </html>

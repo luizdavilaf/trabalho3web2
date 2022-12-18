@@ -8,29 +8,46 @@ const { Category } = require('../models/Categories');
 
 
 
-/* const renderAdd = (req, res) => {
+const renderAdd = (req, res) => {
     let user = undefined
     if (req.session.user) {
-        user = req.session.user.id
+        user = req.session.user
     }
-    return res.render("user-sign", { user });
-} */
+    Category.findAll({
+        include: [{
+            model: User,
+            where: { id: user.id },
+        }], 
+       
+        raw:true
+        
+    }).then((categories)=>{
+        return res.render("create-task", { user, categories });
+    }).catch((err)=>{
+        console.log(err)
+    })
+    
+}
 
 
 const create = async (req, res) => {
     var taskObj = {}
+    let user = undefined
+    if (req.session.user) {
+        user = req.session.user
+    }
 
     if (req.body.title != undefined) {
         taskObj.title = req.body.title
         if (req.body.description != undefined) {
             taskObj.description = req.body.description
-            if (req.body.categoryId != undefined) {
+            if (req.body.categoryId != undefined && req.body.categoryId !="noCategory") {
                 taskObj.categoryId = req.body.categoryId
             }
             if (req.body.deadline != undefined) {
                 taskObj.deadline = new Date(req.body.deadline)
-                if (req.body.userId != undefined) {
-                    taskObj.userId = req.body.userId
+                if (user != undefined) {
+                    taskObj.userId = user.id
                 } else {
                     throw new Error("A tarefa deve ter um usuário responsável não pode ser vazio!");
                 }
@@ -46,7 +63,9 @@ const create = async (req, res) => {
     await Task.create(taskObj)
         .then((task) => {
             task.addUser(taskObj.userId)
-            res.status(200).send({ msg: "tarefa criada", task });
+            req.flash('message', "tarefa criada")
+            return res.redirect("/users/categories");
+            //res.status(200).send({ msg: "tarefa criada", task });
         })
         .catch((err) => {
             if (err.errors[0].message.includes("must be unique")) {
@@ -59,39 +78,15 @@ const create = async (req, res) => {
         })
 }
 
-const listAll = async (req, res) => {
-    await Task.findAll({
-        include: [{ model: User, }]
-    }).then((tasks) => {
-        //res.render('tasks-list', { tasks: tasks })
-        res.status(200).send({ tasks: tasks });
-    })
-        .catch((err) => {
-            res.status(500).send({
-                msg: "Ocorreu um erro ao buscar usuários... Tente novamente!",
-                err: "" + err
-            });
-        })
-}
 
-const listAllbyUser = async (req, res) => {
-    await Task.findAll({
-        include: [{ model: User, }]
-    }).then((tasks) => {
-        //res.render('tasks-list', { tasks: tasks })
-        res.status(200).send({ tasks: tasks });
-    })
-        .catch((err) => {
-            res.status(500).send({
-                msg: "Ocorreu um erro ao buscar usuários... Tente novamente!",
-                err: "" + err
-            });
-        })
-}
 
 const setTaskDone = async (req, res) => {
-    const taskId = req.params.taskId
-    const userId = req.body.userId
+    const taskId = req.params.taskId    
+    let user = undefined
+    if (req.session.user) {
+        user = req.session.user
+    }
+    const userId = user.id
     await Task.findByPk(taskId, {
         where: { 'User.id': userId },
         include: [{
@@ -105,8 +100,9 @@ const setTaskDone = async (req, res) => {
         } else {
             task.setDataValue('done', true)
             task.save()
-                .then((result) => {
-                    res.status(200).send({ msg: "tarefa concluída!", task: result });
+                .then((result) => {                    
+                    res.send('<script>alert("Tarefa Concluída");window.location=document.referrer; </script>')
+                    //res.status(200).send({ msg: "tarefa concluída!", task: result });
                 })
         }
         //res.render('tasks-list', { tasks: tasks })
@@ -121,14 +117,17 @@ const setTaskDone = async (req, res) => {
 }
 
 const listbyCategory = async (req, res) => {
-    const categoryId = req.query.categoryId
-    console.log(categoryId)
+    let user = undefined
+    if (req.session.user) {
+        user = req.session.user
+    }
+    const categoryId = req.query.categoryId    
     const currentDate = new Date(Date.now())
     var page =1
     var limit= 5
     var outdated = "off"
     var pending = "off"
-    var query = {}
+    var query = {}    
     
     if (req.query.limit != undefined) {        
         limit = parseInt(req.query.limit)      
@@ -140,21 +139,18 @@ const listbyCategory = async (req, res) => {
     if (req.query.page != undefined) {       
         page = parseInt(req.query.page)
     }
-    if (req.query.outdated != undefined && req.query.outdated == "on") {
-        query.where = { deadline: { [Sequelize.Op.lte]: currentDate }, done: false }
-        outdated = "on"
-    }
     if (req.query.pending != undefined && req.query.pending == "on") {
         query.where = { done: false }
         pending = "on"
     }
-
+    if (req.query.outdated != undefined && req.query.outdated == "on") {
+        query.where = { deadline: { [Sequelize.Op.lte]: currentDate }, done: false }
+        outdated = "on"
+    }
+   
+    
     if (categoryId == "noCategory") {
-        query.include = 
-             [{
-                model: Category,
-                where: { id: { [Sequelize.Op.eq]: null } }
-            }]       
+        query['where'] = { categoryId: null }          
     } else {
         query.include = [{
                 model: Category,
@@ -169,9 +165,9 @@ const listbyCategory = async (req, res) => {
     var next = page + 1
     
     await Task.findAndCountAll(query).then((result) => {
-        var tasks = result.rows
+        var tasks = result.rows        
         totalPages = parseInt(Math.ceil(result.count / limit))
-        res.render('show-tasks', { tasks, page, limit, totalPages, previous, next, categoryId, outdated, pending });
+        res.render('show-tasks', { tasks, page, limit, totalPages, previous, next, categoryId, outdated, pending, user });
 
         //res.status(200).send({ tasks: tasks });
     })
@@ -187,8 +183,9 @@ const listbyCategory = async (req, res) => {
 
 
 module.exports = {
+    renderAdd,
     listbyCategory,
     setTaskDone,
     create,
-    listAll,
+   
 };

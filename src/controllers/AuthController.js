@@ -4,12 +4,6 @@ const jwt = require('jsonwebtoken');
 const SECRET = 'luizdavilaf'
 
 
-
-
-
-
-
-
 const renderLogin = (req, res) => {
     var user = undefined
     return res.render("login", { user });
@@ -34,8 +28,9 @@ const login = async (req, res) => {
 
                 
 
-                /* return res.status(200).send({ msg: "logado...", token }); */
-                res.send('<script>alert("Logado..."); window.location.href = "/users/categories";</script>')
+                req.flash('message', "logado...")
+                return res.redirect("/users/categories/");
+                //res.send('<script>alert("Logado..."); window.location.href = "/users/categories";</script>')
                 //res.redirect('/users/categories')
             }
 

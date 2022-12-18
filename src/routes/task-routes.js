@@ -7,15 +7,13 @@ const isAuth = require('../middlewares/isAuth');
 const isAdmin = require('../middlewares/isAdmin');
 
 
+router.get('/', isAuth, AuthController.verifyJWT, TaskController.renderAdd);
 
+router.post('/', isAuth, AuthController.verifyJWT, TaskController.create);
 
-router.post('/', TaskController.create);
+router.get('/set-done/:taskId', isAuth, AuthController.verifyJWT, TaskController.setTaskDone);
 
-router.get('/list', TaskController.listAll);
-
-router.put('/set-done/:taskId', TaskController.setTaskDone);
-
-router.get('/list-by-category/', TaskController.listbyCategory);
+router.get('/list-by-category/', isAuth, AuthController.verifyJWT, TaskController.listbyCategory);
 
 
 
